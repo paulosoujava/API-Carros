@@ -27,7 +27,7 @@ public class CarroService {
 	}
 	
 
-	public Iterable<Carro> getCarroByTipo(String tipo) {
+	public List<Carro> getCarroByTipo(String tipo) {
 		return rep.findByTipo(tipo);
 	}
 
