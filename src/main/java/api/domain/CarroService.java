@@ -3,12 +3,15 @@ package api.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import api.domain.Carro;
+import api.domain.dto.CarroDTO;
 
 @Service
 public class CarroService {
@@ -16,23 +19,24 @@ public class CarroService {
 	@Autowired
 	CarroRepository rep;
 	
-	public Iterable<Carro> getCarroByBD(){
-		return  rep.findAll();
+	public List<CarroDTO> getCarroByBD(){
+		return rep.findAll().stream().map(CarroDTO::create).collect(Collectors.toList());
 	}
 	
 	
 
-	public Optional<Carro> getCarroByID(Long id) {
-		return rep.findById(id);
+	public Optional<CarroDTO> getCarroByID(Long id) {
+		return rep.findById(id).map(CarroDTO::create);
 	}
 	
 
-	public List<Carro> getCarroByTipo(String tipo) {
-		return rep.findByTipo(tipo);
+	public List<CarroDTO> getCarroByTipo(String tipo) {
+		return rep.findByTipo(tipo).stream().map(CarroDTO::create).collect(Collectors.toList());
 	}
 
-	public Carro save(Carro c) {
-		return rep.save(c);
+	public CarroDTO save(Carro c) {
+		Assert.isNull(c.getId(), "Ops o id é por nossa conta! ;)");
+		return CarroDTO.create(rep.save(c));
 	}
 	public boolean delete(Long id) {
 		Assert.notNull(id, "Não foi possível atualizar o registro");
@@ -43,17 +47,17 @@ public class CarroService {
 		}
 		return false;
 	}
-	public Carro update(Carro c, Long id) {
+	public CarroDTO update(Carro c, Long id) {
 		Assert.notNull(id, "Não foi possível atualizar o registro");
 		Optional<Carro>  optional = getCarroById(id);
 		if( optional.isPresent()) {
 			Carro db = optional.get();
 			db.setNome(c.getNome());
 			db.setTipo(c.getTipo());
-			return rep.save(db);	
+			return CarroDTO.create(rep.save(db));	
 		}
 		
-		return c;
+		return null;
 	}
 
 	private Optional<Carro> getCarroById(Long id) {
