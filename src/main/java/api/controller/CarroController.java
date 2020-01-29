@@ -72,11 +72,6 @@ public class CarroController {
 		
 	}
 
-	@GetMapping("/inMemory")
-	public List<Carro> getInMemory() {
-		return cs.getCarros();
-	}
-
 	private URI getUri(Long id) {
 		return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
 	}
