@@ -63,17 +63,5 @@ public class CarroService {
 	private Optional<Carro> getCarroById(Long id) {
 		return rep.findById(id);
 	}
-
-
-
-	public List<Carro> getCarros(){
-		List<Carro> carros = new ArrayList<>();
-		carros.add( new Carro( 1L, "Fucao", "classico"));
-		carros.add( new Carro( 2L, "Passat", "classico"));
-		carros.add( new Carro( 3L, "Monza", "classico"));
-		carros.add( new Carro( 4L, "Luna", "classico"));
-		return  carros;
-	}
-
 	
 }
