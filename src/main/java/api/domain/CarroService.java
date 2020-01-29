@@ -6,12 +6,15 @@ import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import api.ObjectNotFoundException;
 import api.domain.Carro;
 import api.domain.dto.CarroDTO;
+
 
 @Service
 public class CarroService {
@@ -23,13 +26,11 @@ public class CarroService {
 		return rep.findAll().stream().map(CarroDTO::create).collect(Collectors.toList());
 	}
 	
-	
-
-	public Optional<CarroDTO> getCarroByID(Long id) {
-		return rep.findById(id).map(CarroDTO::create);
+	public CarroDTO getCarroByID(Long id) {
+		Optional<Carro> carros = rep.findById(id); 
+		return carros.map(CarroDTO::create).orElseThrow(() -> new  ObjectNotFoundException("Carro não encontrado"));
 	}
 	
-
 	public List<CarroDTO> getCarroByTipo(String tipo) {
 		return rep.findByTipo(tipo).stream().map(CarroDTO::create).collect(Collectors.toList());
 	}
@@ -38,14 +39,9 @@ public class CarroService {
 		Assert.isNull(c.getId(), "Ops o id é por nossa conta! ;)");
 		return CarroDTO.create(rep.save(c));
 	}
-	public boolean delete(Long id) {
-		Assert.notNull(id, "Não foi possível atualizar o registro");
-		Optional<Carro>  optional = getCarroById(id);
-		if( optional.isPresent()) {
+	public void delete(Long id) {
 			rep.deleteById(id);
-			return true;
-		}
-		return false;
+		
 	}
 	public CarroDTO update(Carro c, Long id) {
 		Assert.notNull(id, "Não foi possível atualizar o registro");

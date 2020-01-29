@@ -35,10 +35,7 @@ public class CarroController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity getCarroById(@PathVariable("id") Long id) {
-		Optional<CarroDTO> optional = cs.getCarroByID(id);
-		return optional.map(ResponseEntity::ok).orElse(ResponseEntity.noContent().build());
-		// return (optional.isPresent()) ? ResponseEntity.ok(optional.get()) :
-		// ResponseEntity.noContent().build();
+		return ResponseEntity.ok(cs.getCarroByID(id));
 
 	}
 
@@ -50,12 +47,8 @@ public class CarroController {
 
 	@PostMapping
 	public ResponseEntity post(@RequestBody Carro c) {
-		try {
-			CarroDTO carro = cs.save(c);
-			return ResponseEntity.created(getUri(carro.getId())).build();
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().build();
-		}
+		CarroDTO carro = cs.save(c);
+		return ResponseEntity.created(getUri(carro.getId())).build();
 
 	}
 
@@ -68,8 +61,9 @@ public class CarroController {
 
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity delete(@PathVariable("id") Long id) {
-		return cs.delete(id) ? ResponseEntity.ok().build() : ResponseEntity.noContent().build();
-		
+		cs.delete(id);
+		return ResponseEntity.ok().build();
+
 	}
 
 	private URI getUri(Long id) {
