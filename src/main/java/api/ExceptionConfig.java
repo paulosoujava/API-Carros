@@ -2,6 +2,7 @@ package api;
 
 
 import java.io.Serializable;
+import java.nio.file.AccessDeniedException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -23,10 +25,16 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
 		return ResponseEntity.notFound().build();
 	}
 
+	@ExceptionHandler({AccessDeniedException.class})
+	public ResponseEntity accessDanied(Exception e) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body( new Error("Acesso NEgado"));
+	}
+	
 	@ExceptionHandler({IllegalArgumentException.class})
 	public ResponseEntity errorBadRequest(Exception e) {
 		return ResponseEntity.badRequest().build();
 	}
+	
 	 @Override
 	    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 	        return new ResponseEntity<>(new ExceptionError("Operação não permitida"), HttpStatus.METHOD_NOT_ALLOWED);
@@ -34,7 +42,8 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
 	}
 
 	class ExceptionError implements Serializable {
-	    private String error;
+	    private static final long serialVersionUID = 1L;
+		private String error;
 	    ExceptionError(String error) {
 	        this.error = error;
 	    }
